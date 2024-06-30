@@ -81,4 +81,14 @@ public class TaskController {
             return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/updateBasedOnKey")
+    public ResponseEntity updateBasedOnKey(@RequestParam("taskId")String taskId, @RequestParam("key") String key, @RequestParam("value") Object value){
+        try{
+            Task task = taskService.updateBasedOnKey(taskId, key, value);
+            return new ResponseEntity<>(task, HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -8,6 +8,7 @@ import com.todoList.TodoList.transformer.AddTaskRequestDTOTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
@@ -50,7 +51,11 @@ public class TaskService {
             throw new Exception("Task with id not found");
         }
         Task updatedTask = taskOptional.get();
-        updatedTask.setCompletedPercentage(statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
+//        updatedTask.setCompletedPercentage(statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
+        String key = "completedPercentage";
+        Field field = Task.class.getDeclaredField(key);
+        field.setAccessible(true);
+        field.set(updatedTask,statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
         updatedTask.setStatus(statusAndCompletionPercentageRequestDTO.getStatus());
         Task newTaskAdded = taskRepository.save(updatedTask);
         return newTaskAdded;
@@ -70,5 +75,56 @@ public class TaskService {
         updatedTask.setCompletionDate(epochTime);
         Task newTaskAdded = taskRepository.save(updatedTask);
         return newTaskAdded;
+    }
+    public Task updateBasedOnKey(String taskId, String key, Object value) throws Exception {
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        if(taskOptional==null){
+            throw new Exception("Task with id not found");
+        }
+
+        Task toBeUpdated = taskOptional.get();
+        Field field = Task.class.getDeclaredField(key);
+
+        if(key.equals("completionDate")){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = formatter.parse((String) value);
+            Instant instant = date.toInstant();
+            value = instant.getEpochSecond();
+        }
+        Class<?> fieldType = field.getType();
+        if (fieldType == Integer.class || fieldType == int.class) {
+            if (value instanceof String) {
+                value = Integer.parseInt((String) value);
+            } else if (value instanceof Number) {
+                value = ((Number) value).intValue();
+            }
+        } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+            if (value instanceof String) {
+                value = Boolean.parseBoolean((String) value);
+            }
+        } else if (fieldType == Long.class || fieldType == long.class) {
+            if (value instanceof String) {
+                value = Long.parseLong((String) value);
+            } else if (value instanceof Number) {
+                value = ((Number) value).longValue();
+            }
+        } else if (fieldType == Double.class || fieldType == double.class) {
+            if (value instanceof String) {
+                value = Double.parseDouble((String) value);
+            } else if (value instanceof Number) {
+                value = ((Number) value).doubleValue();
+            }
+        } else if (fieldType.isEnum()) {
+            if (value instanceof String) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Enum> enumType = (Class<? extends Enum>) fieldType;
+                value = Enum.valueOf(enumType, (String) value);
+            }
+        }
+
+        field.setAccessible(true);
+        field.set(toBeUpdated,value);
+        Task updatedTask = taskRepository.save(toBeUpdated);
+        return updatedTask;
     }
 }
