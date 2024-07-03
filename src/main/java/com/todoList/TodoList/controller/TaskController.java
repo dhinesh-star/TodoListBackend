@@ -4,10 +4,13 @@ import com.todoList.TodoList.entity.Task;
 import com.todoList.TodoList.requestDTO.AddTaskDTO;
 import com.todoList.TodoList.requestDTO.StatusAndCompletionPercentageRequestDTO;
 import com.todoList.TodoList.responseDTO.AllTaskResponseDTO;
+import com.todoList.TodoList.responseDTO.ErrorResponseDTO;
 import com.todoList.TodoList.responseDTO.TaskResponseTO;
 import com.todoList.TodoList.service.TaskService;
 import com.todoList.TodoList.transformer.AddTaskResponseDTOTransformer;
 import com.todoList.TodoList.transformer.AllTaskResponseDTOTransformer;
+import com.todoList.TodoList.transformer.ErrorResponseDTOTransformer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("task")
+@Slf4j
 public class TaskController {
 
     @Autowired
@@ -31,8 +35,9 @@ public class TaskController {
             return new ResponseEntity<>(addTaskresponse, HttpStatus.CREATED);
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("New Task Creation failed", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -43,8 +48,9 @@ public class TaskController {
             TaskResponseTO deleteTaskResponse = AddTaskResponseDTOTransformer.addTaskResponseDTOTransformer(taskId, responseMsg);
             return new ResponseEntity<>(deleteTaskResponse, HttpStatus.CREATED);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Task Not Deleted", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -55,8 +61,9 @@ public class TaskController {
             AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
             return new ResponseEntity<>(allTaskResponseDTO,HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -66,8 +73,9 @@ public class TaskController {
             Task task = taskService.updateStatusAndCompletionPercentage(statusAndCompletionPercentageRequestDTO);
             return new ResponseEntity<>(task,HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -77,8 +85,9 @@ public class TaskController {
             Task task = taskService.updateDate(taskId, updatedDate);
             return new ResponseEntity<>(task, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/updateBasedOnKey")
@@ -87,8 +96,32 @@ public class TaskController {
             Task task = taskService.updateBasedOnKey(taskId, key, value);
             return new ResponseEntity<>(task, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Error occured while taking the tasks", HttpStatus.BAD_REQUEST);
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/getTaskBasedOnTaskId")
+    public ResponseEntity getTaskBasedOnTaskId(@RequestParam("taskId") String taskId){
+        try {
+            Task task = taskService.getTaskBasedOnTaskId(taskId);
+            return new ResponseEntity<>(task, HttpStatus.OK);
+        }catch (Exception e){
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/getTimeExceedTasks")
+    public ResponseEntity getTimeExceedTasks(){
+        try{
+            List<Task> taskList = taskService.getTimeExceedTasks();
+            AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
+            return new ResponseEntity<>(allTaskResponseDTO, HttpStatus.OK);
+        }catch (Exception e){
+            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
+            log.warn(errorResponseDTO.toString());
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
         }
     }
 }

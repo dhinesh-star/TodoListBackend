@@ -4,7 +4,9 @@ import com.todoList.TodoList.entity.Task;
 import com.todoList.TodoList.repository.TaskRepository;
 import com.todoList.TodoList.requestDTO.AddTaskDTO;
 import com.todoList.TodoList.requestDTO.StatusAndCompletionPercentageRequestDTO;
+import com.todoList.TodoList.responseDTO.AllTaskResponseDTO;
 import com.todoList.TodoList.transformer.AddTaskRequestDTOTransformer;
+import com.todoList.TodoList.transformer.AllTaskResponseDTOTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -126,5 +128,20 @@ public class TaskService {
         field.set(toBeUpdated,value);
         Task updatedTask = taskRepository.save(toBeUpdated);
         return updatedTask;
+    }
+    public Task getTaskBasedOnTaskId(String taskId) throws Exception {
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        if(taskOptional==null){
+            throw new Exception("Task Id not found");
+        }
+        Task task = taskOptional.get();
+        return task;
+    }
+    public List<Task> getTimeExceedTasks(){
+        long currentEpochTime = Instant.now().getEpochSecond();
+        List<Task> getExpiredTasks = taskRepository.getTimeExceedTasks(currentEpochTime);
+//        AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(getExpiredTasks);
+//        return allTaskResponseDTO;
+        return getExpiredTasks;
     }
 }
