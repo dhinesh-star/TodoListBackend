@@ -91,7 +91,7 @@ public class TaskService {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date date = formatter.parse((String) value);
             Instant instant = date.toInstant();
-            value = instant.getEpochSecond();
+            value = instant.getEpochSecond()+(5.5*60*60);
         }
         Class<?> fieldType = field.getType();
         if (fieldType == Integer.class || fieldType == int.class) {

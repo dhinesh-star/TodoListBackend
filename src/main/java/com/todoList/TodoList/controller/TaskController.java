@@ -32,6 +32,7 @@ public class TaskController {
         try {
             String newTaskAddedTaskId = taskService.addTask(addTaskDTO);
             TaskResponseTO addTaskresponse = AddTaskResponseDTOTransformer.addTaskResponseDTOTransformer(newTaskAddedTaskId, "New TaskAdded Successfully");
+            log.info(addTaskresponse.toString());
             return new ResponseEntity<>(addTaskresponse, HttpStatus.CREATED);
         }
         catch (Exception e){
@@ -46,6 +47,7 @@ public class TaskController {
         try{
             String responseMsg = taskService.deleteTask(taskId);
             TaskResponseTO deleteTaskResponse = AddTaskResponseDTOTransformer.addTaskResponseDTOTransformer(taskId, responseMsg);
+            log.info(deleteTaskResponse.toString());
             return new ResponseEntity<>(deleteTaskResponse, HttpStatus.CREATED);
         }catch (Exception e){
             ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
@@ -59,6 +61,7 @@ public class TaskController {
         try {
             List<Task> taskList = taskService.getAllTask();
             AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
+            log.info(allTaskResponseDTO.toString());
             return new ResponseEntity<>(allTaskResponseDTO,HttpStatus.OK);
         }catch (Exception e){
             ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
@@ -117,6 +120,7 @@ public class TaskController {
         try{
             List<Task> taskList = taskService.getTimeExceedTasks();
             AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
+            log.info(allTaskResponseDTO.toString());
             return new ResponseEntity<>(allTaskResponseDTO, HttpStatus.OK);
         }catch (Exception e){
             ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
