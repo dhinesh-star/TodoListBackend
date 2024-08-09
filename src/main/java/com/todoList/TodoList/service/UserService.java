@@ -15,10 +15,13 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     public String addNewTask(AddNewUserDTO addNewUserDTO) throws Exception{
+        User checkUserExist = userRepository.findUserByUserName(addNewUserDTO.getUserName());
+        if(checkUserExist != null) return "User Already exist! Please enter other user";
         String rawPassword = addNewUserDTO.getPassword();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = bCryptPasswordEncoder.encode(rawPassword);
         User newUserCreated = new User();
+        newUserCreated.setEmailId(addNewUserDTO.getEmailId());
         newUserCreated.setUserName(addNewUserDTO.getUserName());
         newUserCreated.setEncodedPassword(encodedPassword);
         userRepository.save(newUserCreated);
