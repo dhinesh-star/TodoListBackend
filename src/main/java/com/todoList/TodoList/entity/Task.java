@@ -26,7 +26,7 @@ public class Task {
 
     private String taskDescription;
 
-    private Integer completedPercentage = 0;
+    private Integer completedPercentage;
 
     private Long completionDate;
 
