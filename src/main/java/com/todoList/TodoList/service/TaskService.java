@@ -23,8 +23,8 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
-    public String addTask(AddTaskDTO addTaskDTO) throws Exception{
-        Task task = AddTaskRequestDTOTransformer.addTaskRequestDTOTransformer(addTaskDTO);
+    public String addTask(AddTaskDTO addTaskDTO, String userName) throws Exception{
+        Task task = AddTaskRequestDTOTransformer.addTaskRequestDTOTransformer(addTaskDTO, userName);
         Task newTaskAdded = taskRepository.save(task);
         return newTaskAdded.getId();
     }
@@ -39,8 +39,8 @@ public class TaskService {
         return "Task deleted";
     }
 
-    public List<Task> getAllTask(){
-        List<Task> taskList = taskRepository.findAll();
+    public List<Task> getAllTask(String userName){
+        List<Task> taskList = taskRepository.getUsersTask(userName);
         Collections.sort(taskList,(a,b)->{
             return a.getId().compareTo(b.getId());
         });
@@ -59,22 +59,6 @@ public class TaskService {
         field.setAccessible(true);
         field.set(updatedTask,statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
         updatedTask.setStatus(statusAndCompletionPercentageRequestDTO.getStatus());
-        Task newTaskAdded = taskRepository.save(updatedTask);
-        return newTaskAdded;
-    }
-    public Task updateDate(String taskId, String updatedDate) throws Exception{
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if(taskOptional==null){
-            throw new Exception("Task with id not found");
-        }
-        //Calculating the epoch time
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = formatter.parse(updatedDate);
-        Instant instant = date.toInstant();
-        long epochTime = instant.getEpochSecond();
-
-        Task updatedTask = taskOptional.get();
-        updatedTask.setCompletionDate(epochTime);
         Task newTaskAdded = taskRepository.save(updatedTask);
         return newTaskAdded;
     }
@@ -137,9 +121,10 @@ public class TaskService {
         Task task = taskOptional.get();
         return task;
     }
-    public List<Task> getTimeExceedTasks(){
+    public List<Task> getTimeExceedTasks(String userName){
         long currentEpochTime = Instant.now().getEpochSecond();
-        List<Task> getExpiredTasks = taskRepository.getTimeExceedTasks(currentEpochTime);
+        System.out.println("currentEpochTime"+currentEpochTime);
+        List<Task> getExpiredTasks = taskRepository.getTimeExceedTasks(currentEpochTime, userName);
 //        AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(getExpiredTasks);
 //        return allTaskResponseDTO;
         return getExpiredTasks;

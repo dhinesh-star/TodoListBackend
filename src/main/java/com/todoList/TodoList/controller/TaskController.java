@@ -28,9 +28,9 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping("/add")
-    public ResponseEntity addTask(@RequestBody AddTaskDTO addTaskDTO){
+    public ResponseEntity addTask(@RequestBody AddTaskDTO addTaskDTO, @RequestParam("username") String userName){
         try {
-            String newTaskAddedTaskId = taskService.addTask(addTaskDTO);
+            String newTaskAddedTaskId = taskService.addTask(addTaskDTO, userName);
             TaskResponseTO addTaskresponse = AddTaskResponseDTOTransformer.addTaskResponseDTOTransformer(newTaskAddedTaskId, "New TaskAdded Successfully");
             log.info(addTaskresponse.toString());
             return new ResponseEntity<>(addTaskresponse, HttpStatus.CREATED);
@@ -57,9 +57,9 @@ public class TaskController {
     }
 
     @GetMapping("/getAllTask")
-    public ResponseEntity getAllTask(){
+    public ResponseEntity getAllTask(@RequestParam("username") String userName){
         try {
-            List<Task> taskList = taskService.getAllTask();
+            List<Task> taskList = taskService.getAllTask(userName);
             AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
             log.info(allTaskResponseDTO.toString());
             return new ResponseEntity<>(allTaskResponseDTO,HttpStatus.OK);
@@ -70,29 +70,6 @@ public class TaskController {
         }
     }
 
-    @PostMapping("/updateStatusAndCompletionPercentage")
-    public ResponseEntity updateStatusAndCompletionPercentage(@RequestBody StatusAndCompletionPercentageRequestDTO statusAndCompletionPercentageRequestDTO){
-        try{
-            Task task = taskService.updateStatusAndCompletionPercentage(statusAndCompletionPercentageRequestDTO);
-            return new ResponseEntity<>(task,HttpStatus.OK);
-        }catch (Exception e){
-            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
-            log.warn(errorResponseDTO.toString());
-            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/updateDate")
-    public ResponseEntity updateDate(@RequestParam("updatedDate") String updatedDate, @RequestParam("taskId") String taskId){
-        try {
-            Task task = taskService.updateDate(taskId, updatedDate);
-            return new ResponseEntity<>(task, HttpStatus.OK);
-        } catch (Exception e) {
-            ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
-            log.warn(errorResponseDTO.toString());
-            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
-        }
-    }
     @GetMapping("/updateBasedOnKey")
     public ResponseEntity updateBasedOnKey(@RequestParam("taskId")String taskId, @RequestParam("key") String key, @RequestParam("value") Object value){
         try{
@@ -116,9 +93,9 @@ public class TaskController {
         }
     }
     @GetMapping("/getTimeExceedTasks")
-    public ResponseEntity getTimeExceedTasks(){
+    public ResponseEntity getTimeExceedTasks(@RequestParam("username") String userName){
         try{
-            List<Task> taskList = taskService.getTimeExceedTasks();
+            List<Task> taskList = taskService.getTimeExceedTasks(userName);
             AllTaskResponseDTO allTaskResponseDTO = AllTaskResponseDTOTransformer.allTaskResponseDTOTransformer(taskList);
             log.info(allTaskResponseDTO.toString());
             return new ResponseEntity<>(allTaskResponseDTO, HttpStatus.OK);

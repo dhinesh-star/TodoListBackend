@@ -22,6 +22,8 @@ public class Task {
     @Indexed(unique = true)
     private String taskName;
 
+    private String userName;
+
     private String taskDescription;
 
     private Integer completedPercentage = 0;

@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.Date;
 
 public class AddTaskRequestDTOTransformer {
-    public static Task addTaskRequestDTOTransformer(AddTaskDTO addTaskDTO) throws ParseException {
+    public static Task addTaskRequestDTOTransformer(AddTaskDTO addTaskDTO, String userName) throws ParseException {
         //Convert Date to epoch Time
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = formatter.parse(addTaskDTO.getCompletionDate());
@@ -19,6 +19,7 @@ public class AddTaskRequestDTOTransformer {
 
 
         Task task = Task.builder()
+                .userName(userName)
                 .taskName(addTaskDTO.getTaskName())
                 .taskDescription(addTaskDTO.getTaskDescription())
                 .priority(addTaskDTO.getPriority())
