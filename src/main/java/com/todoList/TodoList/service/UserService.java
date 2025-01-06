@@ -39,7 +39,7 @@ public class UserService {
 
     public String addNewTask(AddNewUserDTO addNewUserDTO) throws Exception{
         User checkUserExist = userRepository.findUserByUserName(addNewUserDTO.getUserName());
-        if(checkUserExist != null) return "User Already exist! Please enter other user";
+        if(checkUserExist != null) throw new Exception("User Already exist! Please enter other user");
 
         String rawPassword = addNewUserDTO.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);

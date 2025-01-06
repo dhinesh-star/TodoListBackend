@@ -34,6 +34,12 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         String jwtToken = request.getHeader(ApplicationConstants.JWT_HEADER);
         Environment environment = getEnvironment();
         if(jwtToken != null && environment != null){
+            if(jwtToken.startsWith("Bearer ")) {
+                jwtToken = jwtToken.substring(7);
+            }
+            else{
+                throw new BadCredentialsException("Invalid Token Received");
+            }
             try {
                 String secret = environment.getProperty(ApplicationConstants.JWT_SECRET_KEY,
                         ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);

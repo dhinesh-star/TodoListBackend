@@ -3,11 +3,8 @@ package com.todoList.TodoList.service;
 import com.todoList.TodoList.entity.Task;
 import com.todoList.TodoList.repository.TaskRepository;
 import com.todoList.TodoList.requestDTO.AddTaskDTO;
-import com.todoList.TodoList.requestDTO.StatusAndCompletionPercentageRequestDTO;
-import com.todoList.TodoList.responseDTO.AllTaskResponseDTO;
 import com.todoList.TodoList.transformer.AddTaskRequestDTOTransformer;
-import com.todoList.TodoList.transformer.AllTaskResponseDTOTransformer;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -19,9 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
     public String addTask(AddTaskDTO addTaskDTO, String userName) throws Exception{
         Task task = AddTaskRequestDTOTransformer.addTaskRequestDTOTransformer(addTaskDTO, userName);
@@ -42,26 +39,11 @@ public class TaskService {
     public List<Task> getAllTask(String userName){
         List<Task> taskList = taskRepository.getUsersTask(userName);
         Collections.sort(taskList,(a,b)->{
-            return a.getId().compareTo(b.getId());
+            return (int) (a.getCompletionDate() - b.getCompletionDate());
         });
         return taskList;
     }
 
-    public Task updateStatusAndCompletionPercentage(StatusAndCompletionPercentageRequestDTO statusAndCompletionPercentageRequestDTO) throws Exception{
-        Optional<Task> taskOptional = taskRepository.findById(statusAndCompletionPercentageRequestDTO.getTaskId());
-        if(taskOptional==null){
-            throw new Exception("Task with id not found");
-        }
-        Task updatedTask = taskOptional.get();
-//        updatedTask.setCompletedPercentage(statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
-        String key = "completedPercentage";
-        Field field = Task.class.getDeclaredField(key);
-        field.setAccessible(true);
-        field.set(updatedTask,statusAndCompletionPercentageRequestDTO.getCompletionPercentage());
-        updatedTask.setStatus(statusAndCompletionPercentageRequestDTO.getStatus());
-        Task newTaskAdded = taskRepository.save(updatedTask);
-        return newTaskAdded;
-    }
     public Task updateBasedOnKey(String taskId, String key, Object value) throws Exception {
         Optional<Task> taskOptional = taskRepository.findById(taskId);
         if(taskOptional==null){

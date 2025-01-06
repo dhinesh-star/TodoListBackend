@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenicateUserResponseDTO {
     private String userName;
-    private String message;
+    private String token;
 }

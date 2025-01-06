@@ -29,10 +29,14 @@ public class UserController {
             AddNewUserResponseDTO addNewUserResponseDTO = AddNewUserResponseDTOTransformer.addNewUserResponseDTO(addNewUserDTO.getUserName(), response);
             log.info(addNewUserResponseDTO.toString());
             return new ResponseEntity<>(addNewUserResponseDTO, HttpStatus.CREATED);
-        }catch (Exception e){
+        }
+        catch (Exception e){
             ErrorResponseDTO errorResponseDTO = ErrorResponseDTOTransformer.errorResponseDTOTransformer(e.getMessage());
             log.warn(errorResponseDTO.toString());
-            return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+            if(e.getMessage().equals("User Already exist! Please enter other user")){
+                return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(errorResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

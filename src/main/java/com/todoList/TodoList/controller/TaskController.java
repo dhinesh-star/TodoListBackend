@@ -2,7 +2,6 @@ package com.todoList.TodoList.controller;
 
 import com.todoList.TodoList.entity.Task;
 import com.todoList.TodoList.requestDTO.AddTaskDTO;
-import com.todoList.TodoList.requestDTO.StatusAndCompletionPercentageRequestDTO;
 import com.todoList.TodoList.responseDTO.AllTaskResponseDTO;
 import com.todoList.TodoList.responseDTO.ErrorResponseDTO;
 import com.todoList.TodoList.responseDTO.TaskResponseTO;
