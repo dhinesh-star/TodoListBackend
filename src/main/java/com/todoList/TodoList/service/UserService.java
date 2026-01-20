@@ -6,17 +6,14 @@ import com.todoList.TodoList.entity.User;
 import com.todoList.TodoList.enumPackage.Roles;
 import com.todoList.TodoList.repository.UserRepository;
 import com.todoList.TodoList.requestDTO.AddNewUserDTO;
-import com.todoList.TodoList.requestDTO.AuthenicateUserRequestDTO;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +21,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,7 +33,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final Environment environment;
 
-    public String addNewTask(AddNewUserDTO addNewUserDTO) throws Exception{
+    public String addNewUser(AddNewUserDTO addNewUserDTO) throws Exception{
         User checkUserExist = userRepository.findUserByUserName(addNewUserDTO.getUserName());
         if(checkUserExist != null) throw new Exception("User Already exist! Please enter other user");
 

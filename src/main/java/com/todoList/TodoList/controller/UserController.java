@@ -25,7 +25,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity addNewUser(@RequestBody AddNewUserDTO addNewUserDTO){
         try {
-            String response = userService.addNewTask(addNewUserDTO);
+            String response = userService.addNewUser(addNewUserDTO);
             AddNewUserResponseDTO addNewUserResponseDTO = AddNewUserResponseDTOTransformer.addNewUserResponseDTO(addNewUserDTO.getUserName(), response);
             log.info(addNewUserResponseDTO.toString());
             return new ResponseEntity<>(addNewUserResponseDTO, HttpStatus.CREATED);
